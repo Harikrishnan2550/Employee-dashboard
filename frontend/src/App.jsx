@@ -1,13 +1,12 @@
 import React from 'react'
-import { Route, Routes } from 'react-router-dom'
-import Login from './pages/Login'
+ import Navbar from './components/Navbar'
+import AdminDashBoard from './pages/AdminDashBoard'
 
 function App() {
   return (
     <div>
-      <Routes>
-        <Route path='/' element={<Login/>}/>
-      </Routes>
+      <Navbar/>
+      <AdminDashBoard/>
     </div>
   )
 }
