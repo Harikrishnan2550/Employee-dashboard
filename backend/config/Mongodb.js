@@ -6,7 +6,7 @@ const connectDb = async() =>{
         
     })
 
-    await mongoose.connect(`${process.env.mongodb_url}/employee-dashboard`)
+    await mongoose.connect(`${process.env.mongodb_url}`)
 }
 
 export default connectDb

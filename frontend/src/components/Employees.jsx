@@ -9,8 +9,8 @@ function Employees() {
     <div className='p-5'>
       <h1 className='font-bold text-[22px]'>Manage Employees</h1>
       <button className='flex py-1 w-[210px] bg-emerald-500 rounded-lg font-semibold mt-10'><span className='ml-7 text-white'> Add New Employee</span></button>
-        <div className='max-h-[77vh] overflow-auto px-4 text-center'>
-          <table className="w-full mx-auto">
+        <div className='max-h-[87vh] overflow-auto px-4 text-center mt-4'>
+          <table className="w-[1000px] ">
             <thead>
               <tr className="font-semibold text-start py-12">
                 <th className="p-2">S.No</th>
