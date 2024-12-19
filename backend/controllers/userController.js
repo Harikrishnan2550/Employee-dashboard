@@ -1,80 +1,101 @@
-import userModel from "../models/userModel.js";
-import bcrypt from "bcrypt";
+import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
-// Utility to create a JWT token
-const createToken = (id) => {
-  if (!process.env.JWT_SECRET) {
-    throw new Error("JWT_SECRET is not defined in environment variables");
-  }
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-};
-
-// Signup logic
 const signupUser = async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
 
-    // Input validation (ensure all fields are provided)
-    if (!name || !email || !password) {
-      return res.status(400).json({ success: false, error: "All fields are required" });
+  try {
+    // Validate required fields
+    if (!name || !email || !password || !role) {
+      return res.status(400).json({ message: "All fields are required" });
     }
 
     // Check if the user already exists
-    const existingUser = await userModel.findOne({ email });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({ success: false, error: "User with this email already exists" });
+      return res
+        .status(409)
+        .json({ message: "User already exists with this email" });
+    }
+
+    // Validate role
+    const validRoles = ["admin", "hr", "employee"];
+    if (!validRoles.includes(role)) {
+      return res
+        .status(400)
+        .json({ message: "Invalid role. Must be admin, hr, or employee" });
     }
 
     // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create and save the user
-    const newUser = new userModel({
+    // Create and save the new user
+    const newUser = new User({
       name,
       email,
       password: hashedPassword,
+      role,
     });
+
     await newUser.save();
 
-    // Generate a token and respond
-    const token = createToken(newUser._id);
-    res.status(201).json({ success: true, token });
+    res.status(201).json({
+      success: true,
+      message: "User registered successfully",
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        role: newUser.role,
+      },
+    });
   } catch (error) {
-    console.error("Signup error:", error.message); // Improved error logging
-    res.status(500).json({ success: false, message: "Signup failed. Please try again later." });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// Login logic
+// Login User
 const loginUser = async (req, res) => {
+  const { email, password } = req.body;
+
   try {
-    const { email, password } = req.body;
-
-    // Input validation
-    if (!email || !password) {
-      return res.status(400).json({ success: false, error: "Email and password are required" });
-    }
-
-    // Check if the user exists
-    const user = await userModel.findOne({ email });
+    // Check if the user exists in the database
+    const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ success: false, error: "Invalid email or password" });
-    }
+      return res.status(404).json({ message: "User not found" });
+    } else {
+      // Compare the provided password with the hashed password stored in the database
+      const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    // Verify the password
-    const isPasswordCorrect = await bcrypt.compare(password, user.password);
-    if (!isPasswordCorrect) {
-      return res.status(401).json({ success: false, error: "Invalid email or password" });
-    }
+      if (!isPasswordValid) {
 
-    // Generate a token and respond
-    const token = createToken(user._id);
-    res.json({ success: true, token });
+        return res.status(401).json({ message: "Incorrect " });
+      }
+
+      else {
+        // Generate JWT Token if the password is correct
+        const token = jwt.sign(
+          { id: user._id, role: user.role },
+          process.env.JWT_SECRET,
+          { expiresIn: "1h" } // Token valid for 1 hour
+        );
+
+        // Send success response with token and role
+        return res.status(200).json({
+          success: true,
+          token,
+          role: user.role,
+          message: "Login successful",
+        });
+      }
+    }
   } catch (error) {
-    console.error("Login error:", error.message); // Improved error logging
-    res.status(500).json({ success: false, message: "Login failed. Please try again later." });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
+ 
+// Signup User
 
-export { signupUser, loginUser };
+export { loginUser, signupUser };

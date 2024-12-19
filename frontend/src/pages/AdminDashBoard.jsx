@@ -6,6 +6,7 @@ import Employees from '../components/Employees'
 import Department from '../components/Department'
 import Leaves from '../components/Leaves'
 import Salary from '../components/Salary'
+import AddNewEmployee from '../components/AddNewEmployee'
 
 function AdminDashBoard() {
   return (
@@ -17,6 +18,7 @@ function AdminDashBoard() {
         <Route path='/departments' element={<Department/>}/>
         <Route path='/leaves' element={<Leaves/>}/>
         <Route path='/salary' element={<Salary/>}/>
+        <Route path='/add_employee' element={<AddNewEmployee/>}/>
       </Routes>
     </div>
   )
