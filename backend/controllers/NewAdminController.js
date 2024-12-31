@@ -3,6 +3,7 @@ import path from "path";
 import newEmployeeModal from "../models/AddemployeeModal.js";
 import Leave from "../models/LeaveModals.js";
 import Notification from "../models/NotificationModal.js";
+import bcrypt from 'bcrypt'
  
 // Multer configuration for file uploads
 const storage = multer.diskStorage({
@@ -21,33 +22,75 @@ const upload = multer({ storage: storage });
 // Controller for adding a new employee
 const newEmployee = async (req, res) => {
   try {
+    // Validate required fields
+    const {
+      name,
+      email,
+      employee_id,
+      dob,
+      gender,
+      marital_status,
+      designation,
+      department,
+      salary,
+      password,
+      role,
+    } = req.body;
+
+    if (
+      !name ||
+      !email ||
+      !employee_id ||
+      !dob ||
+      !gender ||
+      !marital_status ||
+      !designation ||
+      !department ||
+      !salary ||
+      !password ||
+      !role
+    ) {
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required." });
+    }
+
     // Ensure image is uploaded
     if (!req.file) {
       return res
         .status(400)
-        .json({ success: false, message: "Image is required" });
+        .json({ success: false, message: "Image is required." });
     }
 
+    // Hash password before saving
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    // Create a new employee object
     const employee = new newEmployeeModal({
-      name: req.body.name,
-      email: req.body.email,
-      employee_id: req.body.employee_id,
-      dob: req.body.dob,
-      gender: req.body.gender,
-      marital_status: req.body.marital_status,
-      designation: req.body.designation,
-      department: req.body.department,
-      salary: req.body.salary,
-      password: req.body.password,
-      image: req.file ? req.file.filename : null, // Store filename from multer
-      role: req.body.role,
+      name,
+      email,
+      employee_id,
+      dob,
+      gender,
+      marital_status,
+      designation,
+      department,
+      salary,
+      password: hashedPassword, // Save the hashed password
+      image: req.file.path, // Store file path from multer
+      role,
     });
 
     // Save the employee to the database
     await employee.save();
-    res.status(201).json({ success: true, employee });
+
+    res.status(201).json({
+      success: true,
+      message: "Employee added successfully",
+      employee,
+    });
   } catch (error) {
-    console.error("Error adding new employee:", error);
+    console.error("Error adding new employee:", error.message);
     res
       .status(500)
       .json({ success: false, message: "Failed to add employee", error });
@@ -294,11 +337,10 @@ const getNotificationsByEmployeeId = async (req, res) => {
 };
 
 
-
 // Controller to get all employees
 const getAllEmployees = async (req, res) => {
   try {
-    const employees = await newEmployeeModal.find({});
+    const employees = await newEmployeeModal.find({}); // Your DB query
     if (employees.length === 0) {
       return res.status(404).json({ success: false, message: "No employees found" });
     }

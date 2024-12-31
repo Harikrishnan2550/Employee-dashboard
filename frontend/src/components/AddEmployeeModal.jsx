@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 
 function AddEmployeeModal({ isOpen, onClose }) {
-  const [newEmployee, setNewEmployee] = useState({
+  const defaultEmployeeState = {
     name: '',
     email: '',
     employee_id: '',
@@ -15,9 +15,11 @@ function AddEmployeeModal({ isOpen, onClose }) {
     password: '',
     role: '',
     image: null,
-  });
+  };
 
-  const [isSubmitting, setIsSubmitting] = useState(false);  // To track form submission state
+  const [newEmployee, setNewEmployee] = useState(defaultEmployeeState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [notification, setNotification] = useState('');
 
   // Handle input change for form fields
   const handleInputChange = (e) => {
@@ -40,41 +42,54 @@ function AddEmployeeModal({ isOpen, onClose }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Basic form validation
-    if (!newEmployee.name || !newEmployee.email || !newEmployee.employee_id || !newEmployee.dob) {
-      alert("Please fill in all required fields.");
+    // Validate required fields
+    if (!newEmployee.name || !newEmployee.email || !newEmployee.role) {
+      setNotification('Please fill out all required fields!');
       return;
     }
 
-    setIsSubmitting(true);  // Disable button while submitting
-
+    setIsSubmitting(true);
     const formData = new FormData();
     for (const key in newEmployee) {
       formData.append(key, newEmployee[key]);
     }
 
     try {
-      const response = await axios.post("http://localhost:4000/api/employee/add", formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await axios.post(
+        'http://localhost:4000/api/employee/newemployee',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      );
 
       console.log('Employee added:', response.data);
-      setIsSubmitting(false);  // Reset button state
-      onClose();  // Close the modal after successful submission
+      setNotification('Employee added successfully!');
+      setNewEmployee(defaultEmployeeState); // Reset form
+      onClose(); // Close the modal
     } catch (error) {
-      console.error("Error adding employee:", error);
-      setIsSubmitting(false);  // Reset button state on error
+      console.error('Error adding employee:', error);
+      setNotification('Failed to add employee. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  if (!isOpen) return null;  // Don't render the modal if it's not open
+  const handleClose = () => {
+    setNewEmployee(defaultEmployeeState); // Reset form
+    setNotification(''); // Clear notification
+    onClose();
+  };
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 overflow-auto">
-      <div className="bg-white p-5 rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto">
+      <div className="bg-white p-5 rounded-lg shadow-lg w-[90%] sm:w-[600px] max-h-[80vh] overflow-y-auto">
         <h2 className="text-xl font-semibold mb-4">Add New Employee</h2>
+        {notification && <p className="mb-4 text-center text-red-500">{notification}</p>}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label>Name</label>
@@ -185,13 +200,17 @@ function AddEmployeeModal({ isOpen, onClose }) {
           </div>
           <div className="mb-4">
             <label>Role</label>
-            <input
-              type="text"
+            <select
               name="role"
               value={newEmployee.role}
               onChange={handleInputChange}
               className="w-full p-2 border border-gray-300 rounded"
-            />
+            >
+              <option value="">Select Role</option>
+              <option value="Admin">Admin</option>
+              <option value="HR">HR</option>
+              <option value="Employee">Employee</option>
+            </select>
           </div>
           <div className="mb-4">
             <label>Image</label>
@@ -201,19 +220,26 @@ function AddEmployeeModal({ isOpen, onClose }) {
               onChange={handleImageChange}
               className="w-full p-2 border border-gray-300 rounded"
             />
+            {newEmployee.image && (
+              <img
+                src={URL.createObjectURL(newEmployee.image)}
+                alt="Preview"
+                className="mt-2 w-20 h-20 object-cover rounded"
+              />
+            )}
           </div>
           <div className="flex justify-end">
             <button
               type="button"
-              onClick={onClose}  // Ensure that the modal closes on this button click
+              onClick={handleClose}
               className="mr-2 bg-gray-500 text-white px-4 py-2 rounded"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded"
-              disabled={isSubmitting} // Disable button during submission
+              className={`bg-blue-500 text-white px-4 py-2 rounded ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={isSubmitting}
             >
               {isSubmitting ? 'Saving...' : 'Save'}
             </button>

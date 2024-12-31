@@ -12,14 +12,10 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-// Hash password before saving
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  const bcrypt = await import("bcrypt");
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
-});
+ 
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 export default User;
+
+
+//eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3NmNmZGNlMmVlYjhkYTIyZGQxMjg4NSIsInJvbGUiOiJlbXBsb3llZSIsImlhdCI6MTczNTE5NjE0NCwiZXhwIjoxNzM1MTk5NzQ0fQ.hzD3emiD-I5xj0uHH95YX0vsl3vVpnBQ5bJt7bGELuo

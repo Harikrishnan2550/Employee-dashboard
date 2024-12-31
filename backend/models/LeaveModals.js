@@ -2,8 +2,7 @@ import mongoose from "mongoose";
 
 const leaveSchema = new mongoose.Schema({
   employee_id: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Employee",
+    type: String, // Change from ObjectId to String
     required: true,
   },
   leave_type: { type: String, required: true },

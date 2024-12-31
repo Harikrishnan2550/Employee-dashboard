@@ -1,11 +1,15 @@
 import Payroll from '../models/PayrollModel.js';
 import newEmployeeModal from '../models/AddemployeeModal.js';
- import Leave from '../models/LeaveModals.js';
+import Leave from '../models/LeaveModals.js';
+
 // Function to calculate payroll
 const calculatePayroll = async (employee_id) => {
   try {
-    // Get the employee's details
-    const employee = await newEmployeeModal.findById(employee_id);
+    // Ensure employee_id is treated as a string (e.g., you can use String(employee_id) if needed)
+    employee_id = String(employee_id);
+
+    // Get the employee's details (now using employee_id as a string)
+    const employee = await newEmployeeModal.findOne({ employee_id }); // Changed from `findById` to `findOne` since employee_id is now a string
     if (!employee) {
       throw new Error("Employee not found");
     }

@@ -10,35 +10,71 @@ import {
   getNotificationsByEmployeeId,
   getAllEmployees
 } from "../controllers/NewAdminController.js";
+import { authorizeRoles, authenticateUser } from "../middlewares/employeeMiddleware.js"; // Properly import both
+import verifyToken from '../middlewares/tokenMiddleware.js'
 
 const NewEmployeeRouter = express.Router();
 
-// Route for uploading a new employee
-NewEmployeeRouter.post("/newemployee", upload.single("image"), newEmployee);
+// Apply authentication middleware globally
+NewEmployeeRouter.use(authenticateUser); // Ensures all routes are protected
 
-NewEmployeeRouter.get("/id/:id", viewEmployeeById);
+// Route for uploading a new employee (Admin and HR only)
+NewEmployeeRouter.post(
+  "/newemployee",
+  upload.single("image"),
+  authorizeRoles(["admin", "hr"]), // Only admin and HR can add new employees
+  newEmployee,
+  authenticateUser
+);
 
-NewEmployeeRouter.put("/id/:id", editEmployeeById);
+// View employee details by ID (Admin, HR, and Employee)
+NewEmployeeRouter.get(
+  "/id/:id",
+  authorizeRoles(["admin", "hr", "employee"]), // All roles can view employee details
+  viewEmployeeById
+);
 
-NewEmployeeRouter.get("/search/:employee_id", getEmployeeById);
+// Edit employee details by ID (Admin and HR only)
+NewEmployeeRouter.put(
+  "/id/:id",
+  authorizeRoles(["admin", "hr"]), // Only admin and HR can edit employee details
+  editEmployeeById
+);
 
-NewEmployeeRouter.post("/leave/status", updateLeaveStatus);
+// Search employee by employee_id (Admin, HR, and Employee)
+NewEmployeeRouter.get(
+  "/search/:employee_id",
+  authorizeRoles(["admin", "hr", "employee"]), // All roles can search employee ID
+  getEmployeeById
+);
 
-NewEmployeeRouter.post("/notification", sendNotification);
+// Update leave status (Admin and HR only)
+NewEmployeeRouter.post(
+  "/leave/status",
+  authorizeRoles(["admin", "hr"]), // Only admin and HR can update leave status
+  updateLeaveStatus
+);
 
+// Send notification (Admin and HR only)
+NewEmployeeRouter.post(
+  "/notification",
+  authorizeRoles(["admin", "hr"]), // Only admin and HR can send notifications
+  sendNotification
+);
+
+// Get notifications for an employee by ID (All roles)
 NewEmployeeRouter.get(
   "/notification/:employee_id",
+  authorizeRoles(["admin", "hr", "employee"]), // All roles can view notifications
   getNotificationsByEmployeeId
 );
 
-NewEmployeeRouter.get('/all-employees',getAllEmployees)
-
-
+// Get all employees (Admin and HR only)
+NewEmployeeRouter.get(
+  "/all-employees",
+  authorizeRoles(["admin", "hr"]), // Only admin and HR can view all employees
+  getAllEmployees,
+  verifyToken
+);
 
 export default NewEmployeeRouter;
-
-//675bfe31652248845bedfba3
-
-
-
- 

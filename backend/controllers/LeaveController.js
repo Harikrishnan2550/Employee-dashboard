@@ -14,7 +14,7 @@ const applyLeave = async (req, res) => {
     }
 
     // Check if the employee exists
-    const employee = await newEmployeeModal.findById(employee_id);
+    const employee = await newEmployeeModal.findOne({ employee_id }); // Adjusted to check by employee_id (string)
     if (!employee) {
       return res
         .status(404)
@@ -49,4 +49,6 @@ const applyLeave = async (req, res) => {
 
 export default applyLeave;
 
+
 //http://localhost:4000/employee/leave
+//http://localhost:4000/api/employee/leave/status

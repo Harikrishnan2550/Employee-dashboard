@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const payrollSchema = new mongoose.Schema({
-  employee_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Employee', required: true },
+  employee_id: { type: String, required: true },  // Change ObjectId to String
   salary: { type: Number, required: true },  // Basic salary
   deductions: { type: Number, default: 0 },  // Deductions (e.g., taxes, benefits)
   net_salary: { type: Number, required: true }, // Net salary after deductions
