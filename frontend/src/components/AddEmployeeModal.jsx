@@ -54,6 +54,13 @@ function AddEmployeeModal({ isOpen, onClose }) {
       formData.append(key, newEmployee[key]);
     }
 
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      setNotification('Authorization token is missing.');
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const response = await axios.post(
         'http://localhost:4000/api/employee/newemployee',
@@ -61,6 +68,7 @@ function AddEmployeeModal({ isOpen, onClose }) {
         {
           headers: {
             'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`, // Ensure the token is sent with the request
           },
         }
       );
@@ -70,8 +78,12 @@ function AddEmployeeModal({ isOpen, onClose }) {
       setNewEmployee(defaultEmployeeState); // Reset form
       onClose(); // Close the modal
     } catch (error) {
-      console.error('Error adding employee:', error);
-      setNotification('Failed to add employee. Please try again.');
+      console.error('Error adding employee:', error.response || error.message);
+      setNotification(
+        error.response?.data?.message ||
+        error.message ||
+        'Failed to add employee. Please try again.'
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -91,6 +103,7 @@ function AddEmployeeModal({ isOpen, onClose }) {
         <h2 className="text-xl font-semibold mb-4">Add New Employee</h2>
         {notification && <p className="mb-4 text-center text-red-500">{notification}</p>}
         <form onSubmit={handleSubmit}>
+          {/* Employee Name */}
           <div className="mb-4">
             <label>Name</label>
             <input
@@ -101,6 +114,8 @@ function AddEmployeeModal({ isOpen, onClose }) {
               className="w-full p-2 border border-gray-300 rounded"
             />
           </div>
+
+          {/* Email */}
           <div className="mb-4">
             <label>Email</label>
             <input
@@ -111,6 +126,8 @@ function AddEmployeeModal({ isOpen, onClose }) {
               className="w-full p-2 border border-gray-300 rounded"
             />
           </div>
+
+          {/* Employee ID */}
           <div className="mb-4">
             <label>Employee ID</label>
             <input
@@ -121,6 +138,8 @@ function AddEmployeeModal({ isOpen, onClose }) {
               className="w-full p-2 border border-gray-300 rounded"
             />
           </div>
+
+          {/* Date of Birth */}
           <div className="mb-4">
             <label>Date of Birth</label>
             <input
@@ -131,6 +150,8 @@ function AddEmployeeModal({ isOpen, onClose }) {
               className="w-full p-2 border border-gray-300 rounded"
             />
           </div>
+
+          {/* Gender */}
           <div className="mb-4">
             <label>Gender</label>
             <select
@@ -145,6 +166,8 @@ function AddEmployeeModal({ isOpen, onClose }) {
               <option value="other">Other</option>
             </select>
           </div>
+
+          {/* Marital Status */}
           <div className="mb-4">
             <label>Marital Status</label>
             <select
@@ -158,6 +181,8 @@ function AddEmployeeModal({ isOpen, onClose }) {
               <option value="married">Married</option>
             </select>
           </div>
+
+          {/* Designation */}
           <div className="mb-4">
             <label>Designation</label>
             <input
@@ -168,6 +193,8 @@ function AddEmployeeModal({ isOpen, onClose }) {
               className="w-full p-2 border border-gray-300 rounded"
             />
           </div>
+
+          {/* Department */}
           <div className="mb-4">
             <label>Department</label>
             <input
@@ -178,6 +205,8 @@ function AddEmployeeModal({ isOpen, onClose }) {
               className="w-full p-2 border border-gray-300 rounded"
             />
           </div>
+
+          {/* Salary */}
           <div className="mb-4">
             <label>Salary</label>
             <input
@@ -188,6 +217,8 @@ function AddEmployeeModal({ isOpen, onClose }) {
               className="w-full p-2 border border-gray-300 rounded"
             />
           </div>
+
+          {/* Password */}
           <div className="mb-4">
             <label>Password</label>
             <input
@@ -198,6 +229,8 @@ function AddEmployeeModal({ isOpen, onClose }) {
               className="w-full p-2 border border-gray-300 rounded"
             />
           </div>
+
+          {/* Role */}
           <div className="mb-4">
             <label>Role</label>
             <select
@@ -212,6 +245,8 @@ function AddEmployeeModal({ isOpen, onClose }) {
               <option value="Employee">Employee</option>
             </select>
           </div>
+
+          {/* Image */}
           <div className="mb-4">
             <label>Image</label>
             <input
@@ -228,6 +263,8 @@ function AddEmployeeModal({ isOpen, onClose }) {
               />
             )}
           </div>
+
+          {/* Action Buttons */}
           <div className="flex justify-end">
             <button
               type="button"

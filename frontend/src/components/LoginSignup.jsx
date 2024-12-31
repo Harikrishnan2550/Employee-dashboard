@@ -1,52 +1,53 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate for redirection
+import { useNavigate } from 'react-router-dom';
 
 const LoginSignup = ({ setIsAuthenticated }) => {
   const [isLogin, setIsLogin] = useState(true);
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    role: 'employee',
-  });
+  const [formData, setFormData] = useState({ name: '', email: '', password: '', role: 'employee' });
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Handle form input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData((prevData) => ({ ...prevData, [name]: value }));
   };
 
-  // Switch between login and signup forms
   const toggleForm = () => {
     setIsLogin(!isLogin);
     setError('');
   };
 
-  // Handle form submission for login/signup
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    setError('');
 
     const endpoint = isLogin
-      ? 'http://localhost:4000/api/user/login'
-      : 'http://localhost:4000/api/user/signup';
+      ? `http://localhost:4000/api/user/login`
+      : `http://localhost:4000/api/user/signup`;
+
+    const { name, email, password, role } = formData;
+    const payload = isLogin ? { email, password } : { name, email, password, role };
 
     try {
-      const response = await axios.post(endpoint, formData);
-      if (response.data.success) {
-        localStorage.setItem('token', response.data.token);
-        setIsAuthenticated(true);
-        navigate('/admin'); // Redirect to the Admin Dashboard after login/signup
+      const response = await axios.post(endpoint, payload);
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('role', response.data.role);
+      setIsAuthenticated(true);
+
+      if (response.data.role === 'admin') {
+        navigate('/admin/home');
+      } else if (response.data.role === 'hr') {
+        navigate('/hr/home');
       } else {
-        setError(response.data.message);
+        navigate('/employee/home');
       }
     } catch (err) {
       setError('Something went wrong. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -57,7 +58,6 @@ const LoginSignup = ({ setIsAuthenticated }) => {
           {isLogin ? 'Login' : 'Sign Up'}
         </h2>
         <form onSubmit={handleSubmit}>
-          {/* Name Field (only for signup) */}
           {!isLogin && (
             <div className="mb-4">
               <label htmlFor="name" className="block text-sm font-medium text-gray-600">
@@ -74,8 +74,6 @@ const LoginSignup = ({ setIsAuthenticated }) => {
               />
             </div>
           )}
-
-          {/* Email Field */}
           <div className="mb-4">
             <label htmlFor="email" className="block text-sm font-medium text-gray-600">
               Email
@@ -90,8 +88,6 @@ const LoginSignup = ({ setIsAuthenticated }) => {
               required
             />
           </div>
-
-          {/* Password Field */}
           <div className="mb-4">
             <label htmlFor="password" className="block text-sm font-medium text-gray-600">
               Password
@@ -106,8 +102,6 @@ const LoginSignup = ({ setIsAuthenticated }) => {
               required
             />
           </div>
-
-          {/* Role Field (only for signup) */}
           {!isLogin && (
             <div className="mb-4">
               <label htmlFor="role" className="block text-sm font-medium text-gray-600">
@@ -127,29 +121,21 @@ const LoginSignup = ({ setIsAuthenticated }) => {
               </select>
             </div>
           )}
-
-          {/* Error Message */}
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-
-          {/* Submit Button */}
           <div className="flex justify-center">
             <button
               type="submit"
-              className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              disabled={isLoading}
+              className={`w-full py-2 px-4 ${isLoading ? 'bg-blue-300' : 'bg-blue-500'} text-white rounded-lg hover:bg-blue-600`}
             >
-              {isLogin ? 'Login' : 'Sign Up'}
+              {isLoading ? 'Loading...' : isLogin ? 'Login' : 'Sign Up'}
             </button>
           </div>
         </form>
-
-        {/* Toggle between login and signup */}
         <div className="mt-4 text-center">
           <p>
             {isLogin ? 'Don’t have an account?' : 'Already have an account?'}
-            <button
-              onClick={toggleForm}
-              className="text-blue-500 font-medium ml-2"
-            >
+            <button onClick={toggleForm} className="text-blue-500 font-medium ml-2">
               {isLogin ? 'Sign Up' : 'Login'}
             </button>
           </p>

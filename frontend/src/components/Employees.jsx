@@ -11,15 +11,19 @@ function Employees() {
   useEffect(() => {
     const fetchEmployees = async () => {
       try {
-        // Assuming you have the token stored in localStorage or context
-        const token = localStorage.getItem('token'); // or from context
+        // Get token from localStorage
+        const token = localStorage.getItem('token'); // Make sure it's stored after login
+        if (!token) {
+          throw new Error("Authentication token is missing.");
+        }
+
+        // Send GET request to fetch employees
         const response = await axios.get("http://localhost:4000/api/employee/all-employees", {
           headers: {
             Authorization: `Bearer ${token}`, // Send the token in Authorization header
           }
         });
-        
-        console.log(response.data);
+
         if (response.data.success) {
           setDetails(response.data.employees); // Set the employees in state
         } else {
@@ -27,21 +31,17 @@ function Employees() {
         }
       } catch (error) {
         console.error("Error fetching employees:", error);
+        alert(error.message);  // Show error message to user
       }
     };
-  
+
     fetchEmployees();
   }, []);
-  
-  
 
   // Filter employees based on search term (Employee ID)
   const filteredEmployees = details.filter((employee) =>
     employee.employee_id.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const token = localStorage.getItem('token');
-console.log(token); // Check if the token is retrieved correctly
 
   return (
     <div className='p-5'>
@@ -76,41 +76,40 @@ console.log(token); // Check if the token is retrieved correctly
             </tr>
           </thead>
           <tbody>
-  {filteredEmployees.length > 0 ? (
-    filteredEmployees.map((employe, index) => (
-      <tr key={index}>
-        <td>{employe.employee_id}</td>
-        <td>
-          <img
-            src={`http://localhost:4000/upload/images/${employe.image}`} // Assuming the server serves images from this path
-            alt={employe.name}
-            className="rounded-lg ring-1 ring-slate-900/5 my-1 h-[50px] w-[80px]"
-          />
-        </td>
-        <td>{employe.name}</td>
-        <td>{employe.dob}</td>
-        <td>{employe.department}</td>
-        <td>
-          <div className='space-x-5'>
-            <button className='bg-blue-500 ring-blue-200 rounded-md px-3 py-1'>View</button>
-            <button className='bg-green-500 ring-green-200 rounded-md px-3 py-1'>Edit</button>
-            <button className='bg-yellow-500 ring-yellow-200 rounded-md px-3 py-1'>Salary</button>
-            <button className='bg-red-500 ring-red-200 rounded-md px-3 py-1'>Leave</button>
-          </div>
-        </td>
-      </tr>
-    ))
-  ) : (
-    <tr>
-      <td colSpan="6">No employees found</td>
-    </tr>
-  )}
-</tbody>
-
+            {filteredEmployees.length > 0 ? (
+              filteredEmployees.map((employee, index) => (
+                <tr key={index}>
+                  <td>{employee.employee_id}</td>
+                  <td>
+                    <img
+                      src={`http://localhost:4000/upload/images/${employee.image}`} // Assuming the server serves images from this path
+                      alt={employee.name}
+                      className="rounded-lg ring-1 ring-slate-900/5 my-1 h-[50px] w-[80px]"
+                    />
+                  </td>
+                  <td>{employee.name}</td>
+                  <td>{employee.dob}</td>
+                  <td>{employee.department}</td>
+                  <td>
+                    <div className='space-x-5'>
+                      <button className='bg-blue-500 ring-blue-200 rounded-md px-3 py-1'>View</button>
+                      <button className='bg-green-500 ring-green-200 rounded-md px-3 py-1'>Edit</button>
+                      <button className='bg-yellow-500 ring-yellow-200 rounded-md px-3 py-1'>Salary</button>
+                      <button className='bg-red-500 ring-red-200 rounded-md px-3 py-1'>Leave</button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="6">No employees found</td>
+              </tr>
+            )}
+          </tbody>
         </table>
       </div>
 
-      {/* Include the Modal here */}
+      {/* Include the AddEmployeeModal here */}
       <AddEmployeeModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
     </div>
   );

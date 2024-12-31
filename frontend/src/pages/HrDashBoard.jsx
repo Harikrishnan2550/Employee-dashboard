@@ -1,4 +1,3 @@
-// AdminDashBoard.jsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from '../components/Home';
@@ -7,7 +6,7 @@ import Leaves from '../components/Leaves';
 import Salary from '../components/Salary';
 import Sidebar from '../components/Sidebar'
 
-function AdminDashBoard() {
+function HrDashBoard() {
   return (
     <div className="lg:flex bg-slate-200 min-h-screen">
       <Sidebar /> {/* Assuming Sidebar component is in place */}
@@ -18,11 +17,11 @@ function AdminDashBoard() {
           <Route path="home" element={<Home />} />
           <Route path="employees" element={<Employees />} />
           <Route path="leaves" element={<Leaves />} />
-          <Route path="salary" element={<Salary />} />
+          <Route path="salary/:employee_id" element={<Salary />} />
         </Routes>
       </div>
     </div>
   );
 }
 
-export default AdminDashBoard;
+export default HrDashBoard;
