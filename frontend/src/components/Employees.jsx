@@ -1,51 +1,62 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AddEmployeeModal from './AddEmployeeModal';  // Import the modal
+// import decode from 'jwt-decode';  // Importing jwt-decode correctly
 
 function Employees() {
   const [details, setDetails] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);  // New loading state
+  const [error, setError] = useState(null);  // New error state
 
-  // Fetch all employees when the component mounts
   useEffect(() => {
     const fetchEmployees = async () => {
+      setLoading(true);  // Start loading
       try {
-        // Get token from localStorage
-        const token = localStorage.getItem('token'); // Make sure it's stored after login
+        const token = localStorage.getItem('token');
         if (!token) {
           throw new Error("Authentication token is missing.");
         }
 
-        // Send GET request to fetch employees
+        // Decode the token to check for validity (optional)
+        // const decodedToken = decode(token);
+        // console.log(decodedToken); // Log the decoded token to verify
+
         const response = await axios.get("http://localhost:4000/api/employee/all-employees", {
           headers: {
-            Authorization: `Bearer ${token}`, // Send the token in Authorization header
+            Authorization: `Bearer ${token}`,
           }
         });
 
         if (response.data.success) {
-          setDetails(response.data.employees); // Set the employees in state
+          setDetails(response.data.employees);
         } else {
-          console.error("Error fetching employees:", response.data.message);
+          setError("Error fetching employees.");
         }
       } catch (error) {
-        console.error("Error fetching employees:", error);
-        alert(error.message);  // Show error message to user
+        setError(error.message);
+      } finally {
+        setLoading(false);  // End loading
       }
     };
 
     fetchEmployees();
   }, []);
 
-  // Filter employees based on search term (Employee ID)
   const filteredEmployees = details.filter((employee) =>
     employee.employee_id.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  if (loading) return <p>Loading employees...</p>;
+
   return (
     <div className='p-5'>
       <h1 className='font-bold text-[22px]'>Manage Employees</h1>
+
+      {/* Display error message */}
+      {error && <div className="text-red-500 mb-4">{error}</div>}
+
       <div className='flex justify-between'>
         <input
           type="text"
@@ -62,9 +73,8 @@ function Employees() {
         </button>
       </div>
 
-      {/* Employees Table */}
       <div className='max-h-[87vh] overflow-auto px-4 text-center mt-4'>
-        <table className="w-[1200px]">
+        <table className="min-w-full">
           <thead>
             <tr className="font-semibold text-start py-12">
               <th className="p-2">S.No</th>
@@ -78,11 +88,11 @@ function Employees() {
           <tbody>
             {filteredEmployees.length > 0 ? (
               filteredEmployees.map((employee, index) => (
-                <tr key={index}>
+                <tr key={index} className="border-b">
                   <td>{employee.employee_id}</td>
                   <td>
                     <img
-                      src={`http://localhost:4000/upload/images/${employee.image}`} // Assuming the server serves images from this path
+                      src={`http://localhost:4000/images/${employee.image}`}
                       alt={employee.name}
                       className="rounded-lg ring-1 ring-slate-900/5 my-1 h-[50px] w-[80px]"
                     />
@@ -109,7 +119,6 @@ function Employees() {
         </table>
       </div>
 
-      {/* Include the AddEmployeeModal here */}
       <AddEmployeeModal isOpen={modalOpen} onClose={() => setModalOpen(false)} />
     </div>
   );

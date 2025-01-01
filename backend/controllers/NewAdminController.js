@@ -1,10 +1,8 @@
 import multer from "multer";
 import path from "path";
 import newEmployeeModal from "../models/AddemployeeModal.js";
-import Leave from "../models/LeaveModals.js";
-import Notification from "../models/NotificationModal.js";
-import bcrypt from 'bcrypt'
- 
+import bcrypt from "bcrypt";
+
 // Multer configuration for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -22,6 +20,10 @@ const upload = multer({ storage: storage });
 // Controller for adding a new employee
 const newEmployee = async (req, res) => {
   try {
+    // Debug logs to check data
+    console.log("Request Body:", req.body); // Form data
+    console.log("Uploaded File:", req.file); // Image file data
+
     // Validate required fields
     const {
       name,
@@ -97,8 +99,7 @@ const newEmployee = async (req, res) => {
   }
 };
 
-//code for viewing
-
+// Controller for viewing employee details by ID
 const viewEmployeeById = async (req, res) => {
   try {
     const { id } = req.params; // Get _id from route parameters
@@ -121,13 +122,11 @@ const viewEmployeeById = async (req, res) => {
     res.status(200).json({ success: true, employee });
   } catch (error) {
     console.error("Error fetching employee details:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Failed to fetch employee details",
-        error,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch employee details",
+      error,
+    });
   }
 };
 
@@ -340,16 +339,41 @@ const getNotificationsByEmployeeId = async (req, res) => {
 // Controller to get all employees
 const getAllEmployees = async (req, res) => {
   try {
-    const employees = await newEmployeeModal.find({}); // Your DB query
+    // Add pagination options (optional, but useful for larger data sets)
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const employees = await newEmployeeModal.find({}).skip(skip).limit(limit); // DB query with pagination
+
     if (employees.length === 0) {
-      return res.status(404).json({ success: false, message: "No employees found" });
+      return res.status(404).json({
+        success: false,
+        message: "No employees found",
+      });
     }
-    res.status(200).json({ success: true, employees });
+
+    // Optionally, return pagination info in the response
+    const totalEmployees = await newEmployeeModal.countDocuments();
+    const totalPages = Math.ceil(totalEmployees / limit);
+
+    res.status(200).json({
+      success: true,
+      employees,
+      totalEmployees,
+      totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.error("Error fetching employees:", error);
-    res.status(500).json({ success: false, message: "Failed to fetch employees", error });
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch employees",
+      error: error.message, // Detailed error message
+    });
   }
 };
+
 
 
 // Export both the controller and upload middleware

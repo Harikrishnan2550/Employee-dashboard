@@ -20,11 +20,19 @@ connectDb().catch((error) => {
   process.exit(1);
 });
 
+// CORS Configuration
+// const corsOptions = {
+//   origin: ['http://localhost:4000', 'http://localhost:5173'], // Allow both origins
+//   methods: ['GET', 'POST', 'PUT', 'DELETE'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   credentials: true, // Allow cookies to be sent with requests
+// };
+
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors());  // Use CORS with the specified options
 app.use(morgan('dev'));  // Log HTTP requests in the console
-app.use("/images", express.static("upload/images"));
+app.use("/images", express.static("upload/images"));  // Serve images from the 'upload/images' folder
 
 // Routes
 app.use("/api/user", router);
