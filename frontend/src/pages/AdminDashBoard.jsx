@@ -6,6 +6,8 @@ import Employees from '../components/Employees';
 import Leaves from '../components/Leaves';
 import Salary from '../components/Salary';
 import Sidebar from '../components/Sidebar'
+import Attendence from '../components/Attendence';
+import ManageLeave from '../components/ManageLeave';
 
 function AdminDashBoard() {
   return (
@@ -17,8 +19,9 @@ function AdminDashBoard() {
           {/* Use relative paths here */}
           <Route path="home" element={<Home />} />
           <Route path="employees" element={<Employees />} />
-          <Route path="leaves" element={<Leaves />} />
+          <Route path="manage-leaves" element={<ManageLeave/>} />
           <Route path="salary" element={<Salary />} />
+          <Route path="attendence" element={<Attendence/>}/>
         </Routes>
       </div>
     </div>

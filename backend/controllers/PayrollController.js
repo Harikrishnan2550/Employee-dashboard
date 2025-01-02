@@ -77,7 +77,36 @@ const viewPayroll = async (req, res) => {
   }
 };
 
-export { generatePayroll, viewPayroll };
+// Controller to view payroll for all employees
+const viewAllPayrolls = async (req, res) => {
+  try {
+    // Fetch all payroll records from the database
+    const payrolls = await Payroll.find().sort({ pay_date: -1 }); // Sort by pay_date, latest first
+
+    if (!payrolls || payrolls.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'No payroll records found',
+      });
+    }
+
+    // Send the payroll records as the response
+    res.status(200).json({
+      success: true,
+      message: 'Payroll records for all employees fetched successfully',
+      payrolls,
+    });
+  } catch (error) {
+    console.error('Error fetching all payroll records:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch all payroll records',
+      error: error.message || error,
+    });
+  }
+};
+
+export { generatePayroll, viewPayroll,viewAllPayrolls };
 
   //http://localhost:4000/api/admin/generate  , generate payroll
   //http://localhost:4000/api/admin/view/:employee_id, view payroll

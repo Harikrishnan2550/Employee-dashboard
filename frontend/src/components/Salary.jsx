@@ -1,24 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
 
 function Salary() {
-  const { employee_id } = useParams(); // Get employee_id from the URL
   const [payrollData, setPayrollData] = useState([]);
   const [error, setError] = useState(null);
 
-  // Fetch payroll data for the employee on component mount
+  // Fetch payroll data for all employees on component mount
   useEffect(() => {
     const fetchPayroll = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/api/admin/view/${employee_id}`);
+        const response = await axios.get('http://localhost:4000/api/admin/view-all');
         
         if (response.data.success) {
-          // Assuming the payroll data is in response.data.payroll
-          if (response.data.payroll.length === 0) {
-            setError('No payroll records available for this employee');
+          if (response.data.payrolls.length === 0) {
+            setError('No payroll records available for any employee');
           } else {
-            setPayrollData(response.data.payroll); 
+            setPayrollData(response.data.payrolls); // Use 'payrolls' instead of 'payroll'
           }
         } else {
           setError(response.data.message || 'Error fetching payroll data');
@@ -30,7 +27,7 @@ function Salary() {
     };
 
     fetchPayroll();
-  }, [employee_id]); // Re-fetch if employee_id changes
+  }, []); // No need to depend on employee_id here
 
   return (
     <div>

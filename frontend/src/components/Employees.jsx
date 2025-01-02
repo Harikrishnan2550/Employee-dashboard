@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AddEmployeeModal from './AddEmployeeModal';  // Import the modal
-// import decode from 'jwt-decode';  // Importing jwt-decode correctly
 
 function Employees() {
   const [details, setDetails] = useState([]);
@@ -18,10 +17,6 @@ function Employees() {
         if (!token) {
           throw new Error("Authentication token is missing.");
         }
-
-        // Decode the token to check for validity (optional)
-        // const decodedToken = decode(token);
-        // console.log(decodedToken); // Log the decoded token to verify
 
         const response = await axios.get("http://localhost:4000/api/employee/all-employees", {
           headers: {

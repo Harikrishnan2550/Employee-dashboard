@@ -28,13 +28,21 @@ function Sidebar() {
         {/* Navigation links */}
         {userRole === 'admin' && (
           <>
-            <NavLink to="employees" className="link-styles">
+            <NavLink to="employees" className="link-styles text-white">
               <IoPeople className="mr-2 text-lg" />
               Employees
             </NavLink>
-            <NavLink to="leaves" className="link-styles">
+            <NavLink to="salary" className="link-styles text-white">
               <HiOutlineBanknotes className="mr-2 text-lg" />
               Salary
+            </NavLink>
+            <NavLink to="manage-leaves" className="link-styles text-white">
+              <HiOutlineBanknotes className="mr-2 text-lg" />
+              Leave
+            </NavLink>
+            <NavLink to="attendence" className="link-styles text-white">
+              <HiOutlineBanknotes className="mr-2 text-lg" />
+              Attendence
             </NavLink>
           </>
         )}

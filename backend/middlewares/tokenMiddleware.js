@@ -9,7 +9,7 @@ const verifyToken = (req, res, next) => {
 
   console.log("Token received:", token); // Log the token to debug
 
-  jwt.verify(token, 'your-secret-key', (err, decoded) => {
+  jwt.verify(token, 'employee@001', (err, decoded) => {
     if (err) {
       console.log("Token verification failed:", err.message); // Log verification error
       return res.status(401).json({ success: false, message: 'Invalid or expired token' });
