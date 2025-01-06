@@ -1,5 +1,6 @@
 import { calculatePayroll } from "../services/PayrollServices.js";
 import Payroll from "../models/PayrollModel.js";
+import newEmployeeModal from '../models/AddemployeeModal.js'
 
 // Controller to generate payroll for an employee
 const generatePayroll = async (req, res) => {
@@ -43,7 +44,7 @@ const generatePayroll = async (req, res) => {
 const viewPayroll = async (req, res) => {
   try {
     const { employee_id } = req.params; // Get the employee_id from the route parameter (string format)
-    
+
     if (!employee_id) {
       return res.status(400).json({
         success: false,
@@ -52,26 +53,37 @@ const viewPayroll = async (req, res) => {
     }
 
     // Fetch payroll data for the given employee ID
-    const payroll = await Payroll.find({ employee_id }).sort({ pay_date: -1 }); // Sort by pay_date, latest first
+    const payroll = await Payroll.find({ employee_id }).sort({ pay_date: -1 });
 
     if (!payroll || payroll.length === 0) {
       return res.status(404).json({
         success: false,
-        message: 'No payroll records found for the employee',
+        message: "No payroll records found for the employee",
       });
     }
 
-    // Send the payroll data as the response
+    // Fetch the employee name from the Employee model
+    const employee = await Employee.findOne({ employee_id });
+
+    if (!employee) {
+      return res.status(404).json({
+        success: false,
+        message: "Employee not found",
+      });
+    }
+
+    // Send the payroll data along with the employee name
     res.status(200).json({
       success: true,
-      message: 'Payroll records fetched successfully',
+      message: "Payroll records fetched successfully",
+      employee_name: employee.name,
       payroll,
     });
   } catch (error) {
-    console.error('Error fetching payroll:', error);
+    console.error("Error fetching payroll:", error);
     res.status(500).json({
       success: false,
-      message: 'Failed to fetch payroll records',
+      message: "Failed to fetch payroll records",
       error: error.message || error,
     });
   }
@@ -80,7 +92,7 @@ const viewPayroll = async (req, res) => {
 // Controller to view payroll for all employees
 const viewAllPayrolls = async (req, res) => {
   try {
-    // Fetch all payroll records from the database
+    // Fetch all payroll records
     const payrolls = await Payroll.find().sort({ pay_date: -1 }); // Sort by pay_date, latest first
 
     if (!payrolls || payrolls.length === 0) {
@@ -90,11 +102,22 @@ const viewAllPayrolls = async (req, res) => {
       });
     }
 
-    // Send the payroll records as the response
+    // Fetch employee names and add them to the payroll records
+    const payrollWithNames = await Promise.all(
+      payrolls.map(async (payroll) => {
+        const employee = await newEmployeeModal.findOne({ employee_id: payroll.employee_id });
+        if (employee) {
+          payroll.employee_name = employee.name; // Add employee name to payroll
+        }
+        return payroll;
+      })
+    );
+
+    // Send the payroll records with employee names as the response
     res.status(200).json({
       success: true,
       message: 'Payroll records for all employees fetched successfully',
-      payrolls,
+      payrolls: payrollWithNames,
     });
   } catch (error) {
     console.error('Error fetching all payroll records:', error);
@@ -105,7 +128,6 @@ const viewAllPayrolls = async (req, res) => {
     });
   }
 };
-
 export { generatePayroll, viewPayroll,viewAllPayrolls };
 
   //http://localhost:4000/api/admin/generate  , generate payroll

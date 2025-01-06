@@ -1,19 +1,24 @@
+// routes/AttendanceRouter.js
 import express from "express";
 import {
   clockIn,
   clockOut,
   getAttendanceHistory,
   updateAttendance,
-} from "../controllers/AttentenceController.js";
+  getAllAttendanceHistory,
+} from "../controllers/AttentenceController.js"; // Corrected typo here
 
-const AttendenceRouter = express.Router();
+const AttendanceRouter = express.Router();
 
-AttendenceRouter.post("/clock-in", clockIn);
+AttendanceRouter.post("/clock-in", clockIn);
 
-AttendenceRouter.post("/clock-out", clockOut);
+AttendanceRouter.post("/clock-out", clockOut);
 
-AttendenceRouter.get("/history/:employee_id", getAttendanceHistory);
+AttendanceRouter.get("/history/:employee_id", getAttendanceHistory);
 
-AttendenceRouter.put("/update/:_id", updateAttendance);
+AttendanceRouter.put("/update/:_id", updateAttendance);
 
-export default AttendenceRouter;
+AttendanceRouter.get("/all-history", getAllAttendanceHistory);
+
+
+export default AttendanceRouter;

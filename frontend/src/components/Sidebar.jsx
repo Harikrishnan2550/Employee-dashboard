@@ -22,54 +22,86 @@ function Sidebar() {
   };
 
   return (
-    <div className="w-[18%] lg:min-h-screen min-h-screen border-r-2 bg-gray-700 h-full">
-      <div className="flex flex-col gap-6 pt-5 text-[15px] items-start ml-2">
-        <h1 className="text-white text-xl font-bold ml-6">{getPanelName()}</h1>
-        {/* Navigation links */}
-        {userRole === 'admin' && (
-          <>
-            <NavLink to="employees" className="link-styles text-white">
-              <IoPeople className="mr-2 text-lg" />
-              Employees
-            </NavLink>
-            <NavLink to="salary" className="link-styles text-white">
-              <HiOutlineBanknotes className="mr-2 text-lg" />
-              Salary
-            </NavLink>
-            <NavLink to="manage-leaves" className="link-styles text-white">
-              <HiOutlineBanknotes className="mr-2 text-lg" />
-              Leave
-            </NavLink>
-            <NavLink to="attendence" className="link-styles text-white">
-              <HiOutlineBanknotes className="mr-2 text-lg" />
-              Attendence
-            </NavLink>
-          </>
-        )}
-        {userRole === 'hr' && (
-          <>
-            <NavLink to="/leaves" className="link-styles">
-              <SlCalender className="mr-2 text-lg" />
-              Leaves
-            </NavLink>
-            <NavLink to="/employees" className="link-styles">
-              <IoPeople className="mr-2 text-lg" />
-              Employees
-            </NavLink>
-          </>
-        )}
-        {userRole === 'employee' && (
-          <>
-            <NavLink to="/salary" className="link-styles">
-              <HiOutlineBanknotes className="mr-2 text-lg" />
-              Salary
-            </NavLink>
-            <NavLink to="/attendance" className="link-styles">
-              <SlCalender className="mr-2 text-lg" />
-              Attendance
-            </NavLink>
-          </>
-        )}
+    <div className="w-[18%] min-h-screen border-r-2 bg-gray-800 shadow-lg">
+      <div className="flex flex-col gap-6 pt-8 text-sm text-gray-300">
+        {/* Panel Name */}
+        <h1 className="text-white text-2xl font-semibold text-center mb-8">
+          {getPanelName()}
+        </h1>
+
+        {/* Navigation Links */}
+        <div className="flex flex-col gap-4">
+          {userRole === 'admin' && (
+            <>
+              <NavLink
+                to="employees"
+                className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+              >
+                <IoPeople className="text-xl" />
+                Employees
+              </NavLink>
+              <NavLink
+                to="salary"
+                className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+              >
+                <HiOutlineBanknotes className="text-xl" />
+                Salary
+              </NavLink>
+              <NavLink
+                to="manage-leaves"
+                className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+              >
+                <HiOutlineBanknotes className="text-xl" />
+                Leave
+              </NavLink>
+              <NavLink
+                to="attendence"
+                className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+              >
+                <SlCalender className="text-xl" />
+                Attendance
+              </NavLink>
+            </>
+          )}
+
+          {userRole === 'hr' && (
+            <>
+              <NavLink
+                to="/manage-leaves"
+                className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+              >
+                <SlCalender className="text-xl" />
+                Leaves
+              </NavLink>
+              <NavLink
+                to="/employees"
+                className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+              >
+                <IoPeople className="text-xl" />
+                Employees
+              </NavLink>
+            </>
+          )}
+
+          {userRole === 'employee' && (
+            <>
+              <NavLink
+                to="/salary"
+                className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+              >
+                <HiOutlineBanknotes className="text-xl" />
+                Salary
+              </NavLink>
+              <NavLink
+                to="/attendance"
+                className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+              >
+                <SlCalender className="text-xl" />
+                Attendance
+              </NavLink>
+            </>
+          )}
+        </div>
       </div>
     </div>
   );

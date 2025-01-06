@@ -31,9 +31,10 @@ const calculatePayroll = async (employee_id) => {
     // Generate payslip URL or filename (optional, for demo purposes we use a static string)
     const payslip = `https://your-server.com/payslips/${employee_id}_payslip.pdf`;
 
-    // Save the payroll record
+    // Save the payroll record with employee_name
     const payroll = new Payroll({
       employee_id,
+      employee_name: employee.name, // Add employee_name
       salary,
       deductions,
       net_salary: netSalary,

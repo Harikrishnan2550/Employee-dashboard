@@ -2,9 +2,9 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from '../components/Home';
 import Employees from '../components/Employees';
-import Leaves from '../components/Leaves';
 import Salary from '../components/Salary';
 import Sidebar from '../components/Sidebar'
+import ManageLeave from '../components/ManageLeave';
 
 function HrDashBoard() {
   return (
@@ -16,7 +16,7 @@ function HrDashBoard() {
           {/* Use relative paths here */}
           <Route path="home" element={<Home />} />
           <Route path="employees" element={<Employees />} />
-          <Route path="leaves" element={<Leaves />} />
+          <Route path="manage-leaves" element={<ManageLeave/>} />
           <Route path="salary/:employee_id" element={<Salary />} />
         </Routes>
       </div>
