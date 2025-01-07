@@ -34,28 +34,28 @@ function Sidebar() {
           {userRole === 'admin' && (
             <>
               <NavLink
-                to="employees"
+                to="/employees"
                 className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
               >
                 <IoPeople className="text-xl" />
                 Employees
               </NavLink>
               <NavLink
-                to="salary"
+                to="/salary"
                 className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
               >
                 <HiOutlineBanknotes className="text-xl" />
                 Salary
               </NavLink>
               <NavLink
-                to="manage-leaves"
+                to="/manage-leaves"
                 className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
               >
                 <HiOutlineBanknotes className="text-xl" />
                 Leave
               </NavLink>
               <NavLink
-                to="attendence"
+                to="/attendence"
                 className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
               >
                 <SlCalender className="text-xl" />
@@ -93,7 +93,14 @@ function Sidebar() {
                 Salary
               </NavLink>
               <NavLink
-                to="/attendance"
+                to="/employee/leaves"
+                className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+              >
+                <HiOutlineBanknotes className="text-xl" />
+                 Leaves
+              </NavLink>
+              <NavLink
+                to="/employee/attendance"
                 className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
               >
                 <SlCalender className="text-xl" />

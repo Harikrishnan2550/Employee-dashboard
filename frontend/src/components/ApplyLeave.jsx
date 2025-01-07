@@ -1,34 +1,43 @@
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function ApplyLeave() {
-  const [employeeId, setEmployeeId] = useState(''); // For testing
   const [leaveType, setLeaveType] = useState('');
   const [fromDate, setFromDate] = useState('');
   const [toDate, setToDate] = useState('');
   const [reason, setReason] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Assuming employeeId comes from authentication context/session
+  const employeeId = localStorage.getItem('employeeId') || 'EMP123'; // Replace this with dynamic retrieval logic.
+
+  const validateForm = () => {
+    if (!leaveType || !fromDate || !toDate || !reason) {
+      toast.error('All fields are required!', { position: 'top-right', autoClose: 3000 });
+      return false;
+    }
+
+    if (new Date(fromDate) > new Date(toDate)) {
+      toast.error('Invalid date range: "From Date" cannot be after "To Date".', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      // Validate required fields
-      if (!employeeId || !leaveType || !fromDate || !toDate || !reason) {
-        toast.error('All fields are required!', {
-          position: 'top-right',
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-        return;
-      }
+    if (!validateForm()) return;
 
-      // Send the leave request to the backend
+    setIsSubmitting(true);
+
+    try {
       const response = await axios.post('http://localhost:4000/employee/leave', {
         employee_id: employeeId,
         leave_type: leaveType,
@@ -37,104 +46,116 @@ function ApplyLeave() {
         reason,
       });
 
-      // Show success toast
       toast.success(response.data.message || 'Leave request submitted successfully!', {
         position: 'top-right',
         autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
       });
 
-      // Clear the form fields
-      setEmployeeId('');
-      setLeaveType('');
-      setFromDate('');
-      setToDate('');
-      setReason('');
+      // Reset the form
+      resetForm();
     } catch (error) {
-      // Handle errors
       const errorMessage =
         (error.response && error.response.data && error.response.data.message) ||
         'Failed to submit leave request.';
-
-      toast.error(errorMessage, {
-        position: 'top-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
+      toast.error(errorMessage, { position: 'top-right', autoClose: 3000 });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  const resetForm = () => {
+    setLeaveType('');
+    setFromDate('');
+    setToDate('');
+    setReason('');
+  };
+
   return (
-    <div>
-      <NavLink
-        to={'/leaves'}
-        className='py-1 px-4 ring-emerald-400 ring-1 rounded-lg shadow-lg absolute top-24 left-72 bg-white hover:bg-red-500 '>
-        Back
-      </NavLink>
-      <form onSubmit={handleSubmit}>
-        <div className='bg-white w-[1100px] h-[600px] ml-[90px] mt-24 shadow-2xl rounded-md'>
-          <h1 className='ml-[450px] text-[20px] font-semibold py-10'>Request For Leave</h1>
-          
-          {/* Employee ID for Testing */}
-          <label htmlFor="employeeId" className='ml-20 font-semibold'>Employee ID</label><br />
-          <input
-            id="employeeId"
-            type="text"
-            className='w-[900px] h-8 rounded-md mt-2 ml-20 ring-1 ring-emerald-400'
-            value={employeeId}
-            onChange={(e) => setEmployeeId(e.target.value)} /><br /><br />
-          
-          <label htmlFor="leaveType" className='ml-20 font-semibold'>Leave Type</label><br />
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white shadow-lg rounded-lg p-8 w-full max-w-md space-y-6"
+      >
+        <h1 className="text-2xl font-bold text-center text-emerald-500">
+          Request Leave
+        </h1>
+
+        {/* Leave Type */}
+        <div>
+          <label htmlFor="leaveType" className="block font-medium">
+            Leave Type
+          </label>
           <select
             id="leaveType"
-            className='w-[900px] h-8 rounded-md mt-2 ml-20 ring-1 ring-emerald-400'
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-emerald-300"
             value={leaveType}
-            onChange={(e) => setLeaveType(e.target.value)}>
+            onChange={(e) => setLeaveType(e.target.value)}
+            required
+          >
             <option value="">Select leave type</option>
             <option value="Sick leave">Sick leave</option>
             <option value="Casual leave">Casual leave</option>
             <option value="Annual leave">Annual leave</option>
-          </select><br /><br />
-          <div className='flex mr-40 justify-around'>
-            <div>
-              <label htmlFor="fromDate" className='font-semibold'>From Date</label><br />
-              <input
-                id="fromDate"
-                type="date"
-                className='w-[300px]  h-8 rounded-md mt-2 ring-1 ring-emerald-400'
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)} />
-            </div>
-            <div>
-              <label htmlFor="toDate" className='font-semibold'>To Date</label><br />
-              <input
-                id="toDate"
-                type="date"
-                className='w-[300px]  h-8 rounded-md mt-2 ring-1 ring-emerald-400'
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)} />
-            </div>
-          </div><br />
-          <label htmlFor="reason" className='ml-20 font-semibold'>Reason</label><br />
-          <input
-            id="reason"
-            type="text"
-            className='w-[900px] h-8 rounded-md mt-2 ml-20 ring-1 ring-emerald-400'
-            value={reason}
-            onChange={(e) => setReason(e.target.value)} /><br /><br />
-          <button
-            type="submit"
-            className='w-[900px] h-10 rounded-md mt-2 ml-20 ring-1 ring-emerald-400 bg-emerald-400 font-semibold'>
-            Submit Leave Request
-          </button>
+          </select>
         </div>
+
+        {/* Dates */}
+        <div className="flex space-x-4">
+          <div className="flex-1">
+            <label htmlFor="fromDate" className="block font-medium">
+              From Date
+            </label>
+            <input
+              id="fromDate"
+              type="date"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-emerald-300"
+              value={fromDate}
+              onChange={(e) => setFromDate(e.target.value)}
+              required
+            />
+          </div>
+          <div className="flex-1">
+            <label htmlFor="toDate" className="block font-medium">
+              To Date
+            </label>
+            <input
+              id="toDate"
+              type="date"
+              className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-emerald-300"
+              value={toDate}
+              onChange={(e) => setToDate(e.target.value)}
+              required
+            />
+          </div>
+        </div>
+
+        {/* Reason */}
+        <div>
+          <label htmlFor="reason" className="block font-medium">
+            Reason
+          </label>
+          <textarea
+            id="reason"
+            rows="3"
+            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring focus:ring-emerald-300"
+            value={reason}
+            onChange={(e) => setReason(e.target.value)}
+            required
+          />
+        </div>
+
+        {/* Submit Button */}
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className={`w-full py-2 rounded-md font-bold text-white ${
+            isSubmitting ? 'bg-emerald-300' : 'bg-emerald-500 hover:bg-emerald-600'
+          }`}
+        >
+          {isSubmitting ? 'Submitting...' : 'Submit Leave Request'}
+        </button>
       </form>
+
       <ToastContainer />
     </div>
   );

@@ -1,120 +1,104 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { NavLink } from "react-router-dom"; // Use NavLink for routing
+import axios from "axios";
 
 function Leaves() {
-  const [leaveRequests, setLeaveRequests] = useState([]);
+  const [leaveHistory, setLeaveHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Fetch all leave requests when the component mounts
-    const fetchLeaveRequests = async () => {
+    const fetchLeaveHistory = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/api/leave"); // Adjust the API URL accordingly
-        setLeaveRequests(response.data.leaveRequests);
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("Authentication token not found");
+
+        const response = await axios.get("http://localhost:4000/employee/leave/history", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setLeaveHistory(response.data.leaveHistory || []); // Update leaveHistory
       } catch (err) {
-        setError("Failed to fetch leave requests");
-        console.error(err);
+        setError(err.response?.data?.message || "Failed to fetch leave history");
+        console.error("Error fetching leave history:", err.response?.data || err.message);
+
+        // Handle unauthorized access (optional)
+        if (err.response?.status === 401) {
+          localStorage.removeItem("token"); // Clear token if unauthorized
+          window.location.href = "/login"; // Redirect to login page
+        }
       } finally {
-        setLoading(false);
+        setLoading(false); // Ensure loading state is cleared
       }
     };
 
-    fetchLeaveRequests();
+    fetchLeaveHistory();
   }, []);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>{error}</div>;
+  if (loading) {
+    return <p className="text-center text-gray-500">Loading...</p>;
+  }
+
+  if (error) {
+    return <p className="text-center text-red-500">{error}</p>;
+  }
 
   return (
-    <div className="container mx-auto p-5">
-      <h1 className="text-2xl font-bold mb-5 text-center">Leave Requests</h1>
+    <div className="min-h-screen bg-gray-50 py-10">
+      <div className="max-w-5xl mx-auto bg-white shadow-lg rounded-lg p-6">
+        <h1 className="text-2xl font-bold text-center text-emerald-500 mb-6">Leave History</h1>
 
-      {leaveRequests.length === 0 ? (
-        <p className="text-center text-gray-600">No leave requests found.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full table-auto border-collapse border border-gray-300 shadow-md">
-            <thead className="bg-gray-700 text-white">
-              <tr>
-                <th className="border px-4 py-2">Employee ID</th>
-                <th className="border px-4 py-2">Leave Type</th>
-                <th className="border px-4 py-2">Start Date</th>
-                <th className="border px-4 py-2">End Date</th>
-                <th className="border px-4 py-2">Reason</th>
-                <th className="border px-4 py-2">Status</th>
-                <th className="border px-4 py-2">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leaveRequests.map((leaveRequest) => (
-                <tr key={leaveRequest._id} className="bg-white hover:bg-gray-100">
-                  <td className="border px-4 py-2">{leaveRequest.employee_id}</td>
-                  <td className="border px-4 py-2">{leaveRequest.leave_type}</td>
-                  <td className="border px-4 py-2">{new Date(leaveRequest.start_date).toLocaleDateString()}</td>
-                  <td className="border px-4 py-2">{new Date(leaveRequest.end_date).toLocaleDateString()}</td>
-                  <td className="border px-4 py-2">{leaveRequest.reason}</td>
-                  <td className="border px-4 py-2">{leaveRequest.status}</td>
-                  <td className="border px-4 py-2">
-                    {leaveRequest.status === "Pending" ? (
-                      <>
-                        <button
-                          onClick={() => handleApprove(leaveRequest._id)}
-                          className="px-4 py-2 bg-green-500 text-white rounded mr-2 hover:bg-green-600"
-                        >
-                          Approve
-                        </button>
-                        <button
-                          onClick={() => handleReject(leaveRequest._id)}
-                          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-                        >
-                          Reject
-                        </button>
-                      </>
-                    ) : (
-                      <span className="text-sm text-gray-500">{leaveRequest.status}</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        {/* Apply Leave Button */}
+        <div className="text-right mb-4">
+          <NavLink
+            to="/dashboard/apply-leave" // Adjust the route based on your setup
+            className="bg-emerald-500 text-white py-2 px-4 rounded hover:bg-emerald-600 transition"
+          >
+            Apply Leave
+          </NavLink>
         </div>
-      )}
+
+        {/* Leave History Table */}
+        {leaveHistory.length === 0 ? (
+          <p className="text-center text-gray-500">No leave history found.</p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border rounded-lg">
+              <thead className="bg-emerald-400 text-white">
+                <tr>
+                  <th className="py-2 px-4 border">Leave Type</th>
+                  <th className="py-2 px-4 border">From Date</th>
+                  <th className="py-2 px-4 border">To Date</th>
+                  <th className="py-2 px-4 border">Reason</th>
+                  <th className="py-2 px-4 border">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {leaveHistory.map((leave, index) => (
+                  <tr
+                    key={index}
+                    className={`${
+                      index % 2 === 0 ? "bg-gray-100" : "bg-white"
+                    } hover:bg-gray-200 transition`}
+                  >
+                    <td className="py-2 px-4 border text-center">{leave.leave_type}</td>
+                    <td className="py-2 px-4 border text-center">
+                      {leave.start_date ? new Date(leave.start_date).toLocaleDateString() : "N/A"}
+                    </td>
+                    <td className="py-2 px-4 border text-center">
+                      {leave.end_date ? new Date(leave.end_date).toLocaleDateString() : "N/A"}
+                    </td>
+                    <td className="py-2 px-4 border text-center">{leave.reason}</td>
+                    <td className="py-2 px-4 border text-center">{leave.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
     </div>
   );
-
-  // Function to handle approval
-  const handleApprove = async (leaveId) => {
-    try {
-      const response = await axios.post("http://localhost:4000/api/leave/status", {
-        leaveId,
-        status: "Approved",
-      });
-      alert("Leave request approved");
-      setLeaveRequests(leaveRequests.map(leaveRequest =>
-        leaveRequest._id === leaveId ? { ...leaveRequest, status: "Approved" } : leaveRequest
-      ));
-    } catch (err) {
-      alert("Error updating leave status");
-    }
-  };
-
-  // Function to handle rejection
-  const handleReject = async (leaveId) => {
-    try {
-      const response = await axios.post("http://localhost:4000/api/leave/status", {
-        leaveId,
-        status: "Rejected",
-      });
-      alert("Leave request rejected");
-      setLeaveRequests(leaveRequests.map(leaveRequest =>
-        leaveRequest._id === leaveId ? { ...leaveRequest, status: "Rejected" } : leaveRequest
-      ));
-    } catch (err) {
-      alert("Error updating leave status");
-    }
-  };
 }
 
 export default Leaves;

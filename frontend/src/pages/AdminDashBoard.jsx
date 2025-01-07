@@ -3,8 +3,7 @@ import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from '../components/Home';
 import Employees from '../components/Employees';
-import Leaves from '../components/Leaves';
-import Salary from '../components/Salary';
+ import Salary from '../components/Salary';
 import Sidebar from '../components/Sidebar'
 import Attendence from '../components/Attendence';
 import ManageLeave from '../components/ManageLeave';

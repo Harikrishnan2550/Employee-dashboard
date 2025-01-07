@@ -3,7 +3,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import AdminDashBoard from './pages/AdminDashBoard.jsx';
 import HrDashBoard from './pages/HrDashBoard.jsx';
-import EmployeeDashboard from './pages/EmployeeDashboard.jsx';
+import EmployeeDashboard from './pages/EmployeeDashBoard.jsx';
 import LoginSignup from './components/LoginSignup.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx'; // Import ProtectedRoute
 
