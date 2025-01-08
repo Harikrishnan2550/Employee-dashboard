@@ -7,6 +7,7 @@ import Employees from '../components/Employees';
 import Sidebar from '../components/Sidebar'
 import Attendence from '../components/Attendence';
 import ManageLeave from '../components/ManageLeave';
+import SentNotifications from '../components/SentNotifications';
 
 function AdminDashBoard() {
   return (
@@ -21,6 +22,7 @@ function AdminDashBoard() {
           <Route path="manage-leaves" element={<ManageLeave/>} />
           <Route path="salary" element={<Salary />} />
           <Route path="attendence" element={<Attendence/>}/>
+          <Route path='sent-notification' element={<SentNotifications/>}/>
         </Routes>
       </div>
     </div>

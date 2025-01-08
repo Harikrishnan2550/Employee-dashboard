@@ -32,25 +32,42 @@ function ApplyLeave() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (!validateForm()) return;
-
+  
     setIsSubmitting(true);
-
+  
     try {
-      const response = await axios.post('http://localhost:4000/employee/leave', {
-        employee_id: employeeId,
-        leave_type: leaveType,
-        start_date: fromDate,
-        end_date: toDate,
-        reason,
-      });
-
+      const token = localStorage.getItem('token'); // Retrieve the token from local storage
+      if (!token) {
+        toast.error('Authentication token is missing. Please log in again.', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+        return;
+      }
+  
+      const response = await axios.post(
+        'http://localhost:4000/employee/leave',
+        {
+          employee_id: employeeId,
+          leave_type: leaveType,
+          start_date: fromDate,
+          end_date: toDate,
+          reason,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Add the token to the Authorization header
+          },
+        }
+      );
+  
       toast.success(response.data.message || 'Leave request submitted successfully!', {
         position: 'top-right',
         autoClose: 3000,
       });
-
+  
       // Reset the form
       resetForm();
     } catch (error) {
@@ -62,6 +79,7 @@ function ApplyLeave() {
       setIsSubmitting(false);
     }
   };
+  
 
   const resetForm = () => {
     setLeaveType('');

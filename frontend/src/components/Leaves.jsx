@@ -51,7 +51,7 @@ function Leaves() {
         {/* Apply Leave Button */}
         <div className="text-right mb-4">
           <NavLink
-            to="/dashboard/apply-leave" // Adjust the route based on your setup
+            to="/apply-leave" // Adjust the route based on your setup
             className="bg-emerald-500 text-white py-2 px-4 rounded hover:bg-emerald-600 transition"
           >
             Apply Leave

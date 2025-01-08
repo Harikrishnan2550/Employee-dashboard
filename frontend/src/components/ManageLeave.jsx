@@ -6,11 +6,17 @@ function ManageLeave() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Retrieve token from local storage
+  const token = localStorage.getItem('token');
+
   useEffect(() => {
-    // Fetch all leave requests when the component mounts
     const fetchLeaveRequests = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/employee/view-leave"); // Adjust the API URL accordingly
+        const response = await axios.get("http://localhost:4000/employee/view-leave", {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token in the headers
+          },
+        });
         setLeaveRequests(response.data.leaveRequests);
       } catch (err) {
         setError("Failed to fetch leave requests");
@@ -21,37 +27,53 @@ function ManageLeave() {
     };
 
     fetchLeaveRequests();
-  }, []);
+  }, [token]);
 
-  // Function to handle approval
   const handleApprove = async (leaveId) => {
     try {
-      const response = await axios.post("http://localhost:4000/employee/leave/status", {
-        leaveId,
-        status: "Approved",
-      });
+      const response = await axios.post(
+        "http://localhost:4000/employee/leave/status",
+        {
+          leaveId,
+          status: "Approved",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token in the headers
+          },
+        }
+      );
       alert("Leave request approved");
       setLeaveRequests(leaveRequests.map(leaveRequest =>
         leaveRequest._id === leaveId ? { ...leaveRequest, status: "Approved" } : leaveRequest
       ));
     } catch (err) {
       alert("Error updating leave status");
+      console.error(err);
     }
   };
 
-  // Function to handle rejection
   const handleReject = async (leaveId) => {
     try {
-      const response = await axios.post("http://localhost:4000/employee/leave/status", {
-        leaveId,
-        status: "Rejected",
-      });
+      const response = await axios.post(
+        "http://localhost:4000/employee/leave/status",
+        {
+          leaveId,
+          status: "Rejected",
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`, // Include token in the headers
+          },
+        }
+      );
       alert("Leave request rejected");
       setLeaveRequests(leaveRequests.map(leaveRequest =>
         leaveRequest._id === leaveId ? { ...leaveRequest, status: "Rejected" } : leaveRequest
       ));
     } catch (err) {
       alert("Error updating leave status");
+      console.error(err);
     }
   };
 

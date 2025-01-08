@@ -9,6 +9,7 @@ import NewLeaveRouter from "./Routes/leaveRoutes.js";
 import payrollrouter from "./Routes/PayrollRoutes.js";
 import AttendenceRouter from "./Routes/AttendenceRoutes.js";
 import morgan from 'morgan';  // For logging HTTP requests
+import notificationRouter from "./Routes/NotificationRoutes.js";
 
 // Initialize Express
 const app = express();
@@ -40,6 +41,7 @@ app.use("/api/employee", NewEmployeeRouter);
 app.use("/employee", NewLeaveRouter);
 app.use("/api/admin", payrollrouter);
 app.use("/api/attendence", AttendenceRouter);
+app.use('/api/notification',notificationRouter)
 
 // Error handling for undefined routes
 app.use((req, res) => {

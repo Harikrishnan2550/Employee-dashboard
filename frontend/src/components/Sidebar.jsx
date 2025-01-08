@@ -1,23 +1,23 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
-import { MdDashboard } from 'react-icons/md';
-import { HiOutlineBanknotes } from 'react-icons/hi2';
-import { IoPeople } from 'react-icons/io5';
-import { SlCalender } from 'react-icons/sl';
+import React from "react";
+import { NavLink } from "react-router-dom";
+import { MdDashboard } from "react-icons/md";
+import { HiOutlineBanknotes } from "react-icons/hi2";
+import { IoPeople } from "react-icons/io5";
+import { SlCalender } from "react-icons/sl";
 
 function Sidebar() {
-  const userRole = localStorage.getItem('role'); // Assuming user role is stored in localStorage
+  const userRole = localStorage.getItem("role"); // Assuming user role is stored in localStorage
 
   const getPanelName = () => {
     switch (userRole) {
-      case 'admin':
-        return 'Admin Panel';
-      case 'employee':
-        return 'Employee Panel';
-      case 'hr':
-        return 'HR Panel';
+      case "admin":
+        return "Admin Panel";
+      case "employee":
+        return "Employee Panel";
+      case "hr":
+        return "HR Panel";
       default:
-        return 'Panel';
+        return "Panel";
     }
   };
 
@@ -31,7 +31,7 @@ function Sidebar() {
 
         {/* Navigation Links */}
         <div className="flex flex-col gap-4">
-          {userRole === 'admin' && (
+          {userRole === "admin" && (
             <>
               <NavLink
                 to="/employees"
@@ -61,10 +61,17 @@ function Sidebar() {
                 <SlCalender className="text-xl" />
                 Attendance
               </NavLink>
+              <NavLink
+                to="/sent-notification"
+                className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+              >
+                <SlCalender className="text-xl" />
+                Notification
+              </NavLink>
             </>
           )}
 
-          {userRole === 'hr' && (
+          {userRole === "hr" && (
             <>
               <NavLink
                 to="/manage-leaves"
@@ -83,7 +90,7 @@ function Sidebar() {
             </>
           )}
 
-          {userRole === 'employee' && (
+          {userRole === "employee" && (
             <>
               <NavLink
                 to="/salary"
@@ -97,7 +104,14 @@ function Sidebar() {
                 className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
               >
                 <HiOutlineBanknotes className="text-xl" />
-                 Leaves
+                Leaves
+              </NavLink>
+              <NavLink
+                to="/employee/apply-leave"
+                className="flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-300"
+              >
+                <HiOutlineBanknotes className="text-xl" />
+                Apply Leave
               </NavLink>
               <NavLink
                 to="/employee/attendance"
