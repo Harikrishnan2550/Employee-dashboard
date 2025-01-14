@@ -3,8 +3,8 @@ import {
   sendNotification,
   getNotifications,
   markNotificationAsRead,
-  markAllNotificationsAsRead,
-  getUnreadNotifications,
+  // markAllNotificationsAsRead,
+  // getUnreadNotifications,
 } from "../controllers/NotificationController.js";
 import authenticate from "../middlewares/NotificationAuthenticate.js"; // Use authenticate middleware
 
@@ -20,6 +20,6 @@ notificationRouter.get("/all-notifications", authenticate, getNotifications);
 notificationRouter.put("/:notification_id/read", authenticate, markNotificationAsRead);
 
 // Route to get unread notifications for an employee
-notificationRouter.get("/unread", authenticate, getUnreadNotifications);
+// notificationRouter.get("/unread", authenticate, getUnreadNotifications);
 
 export default notificationRouter;

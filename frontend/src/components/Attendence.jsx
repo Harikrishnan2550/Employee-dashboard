@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+// components/Attendence.jsx
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 const Attendence = () => {
   const [attendanceHistory, setAttendanceHistory] = useState([]);
@@ -7,7 +8,8 @@ const Attendence = () => {
 
   useEffect(() => {
     // Fetch all attendance records
-    axios.get('http://localhost:4000/api/attendence/all-history')
+    axios
+      .get("http://localhost:4000/api/attendence/all-history")
       .then((response) => {
         console.log("Attendance History Response:", response);
         setAttendanceHistory(response.data.attendanceHistory);
@@ -21,13 +23,13 @@ const Attendence = () => {
   return (
     <div className="container mx-auto px-4 py-6">
       <h2 className="text-3xl font-bold text-center mb-6">All Attendance History</h2>
-      
+
       {error && (
         <div className="bg-red-100 text-red-700 p-4 rounded-md mb-6">
           <p>{error}</p>
         </div>
       )}
-      
+
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="min-w-full text-left">
           <thead className="bg-gray-100">
@@ -49,9 +51,11 @@ const Attendence = () => {
                   <td className="px-6 py-4">
                     <span
                       className={`${
-                        attendance.status === 'Present' ? 'bg-green-100 text-green-600' :
-                        attendance.status === 'Absent' ? 'bg-red-100 text-red-600' : 
-                        'bg-yellow-100 text-yellow-600'
+                        attendance.status === "Present"
+                          ? "bg-green-100 text-green-600"
+                          : attendance.status === "Absent"
+                          ? "bg-red-100 text-red-600"
+                          : "bg-yellow-100 text-yellow-600"
                       } px-2 py-1 rounded-full text-xs font-medium`}
                     >
                       {attendance.status}

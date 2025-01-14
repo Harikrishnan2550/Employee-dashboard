@@ -49,14 +49,14 @@ function Leaves() {
         <h1 className="text-2xl font-bold text-center text-emerald-500 mb-6">Leave History</h1>
 
         {/* Apply Leave Button */}
-        <div className="text-right mb-4">
+        {/* <div className="text-right mb-4">
           <NavLink
             to="/apply-leave" // Adjust the route based on your setup
             className="bg-emerald-500 text-white py-2 px-4 rounded hover:bg-emerald-600 transition"
           >
             Apply Leave
           </NavLink>
-        </div>
+        </div> */}
 
         {/* Leave History Table */}
         {leaveHistory.length === 0 ? (

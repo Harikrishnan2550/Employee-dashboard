@@ -35,8 +35,8 @@ function ViewNotification() {
   // Mark a notification as read
   const markAsRead = async (id) => {
     try {
-      const response = await axios.put(
-        `http://localhost:4000/api/notification/read/${id}`,
+      const response = await axios.get(
+        `http://localhost:4000/api/notification/all-notifications`,
         {},
         {
           headers: {

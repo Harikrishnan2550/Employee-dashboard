@@ -1,3 +1,4 @@
+// models/AttendanceModel.js
 import mongoose from "mongoose";
 
 // Define the schema for the attendance

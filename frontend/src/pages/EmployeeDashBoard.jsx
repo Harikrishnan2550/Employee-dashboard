@@ -7,6 +7,7 @@ import Sidebar from "../components/Sidebar";
 import Leaves from "../components/Leaves";
 import Attendence from "../components/Attendence";
 import ApplyLeave from "../components/ApplyLeave";
+import ViewNotification from "../components/viewNotification";
 
 function EmployeeDashboard() {
   return (
@@ -21,6 +22,7 @@ function EmployeeDashboard() {
           <Route path="apply-leave" element={<ApplyLeave />} />
           <Route path="attendance" element={<Attendence />} />
           <Route path="salary/:employee_id" element={<Salary />} />
+          <Route path="view-notification" element={<ViewNotification/>}/>
         </Routes>
       </div>
     </div>
